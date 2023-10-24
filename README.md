@@ -1,3 +1,4 @@
+<pre>
       ______  __                      _                  
     .' ___  |[  |                    / |_                
    / .'   \_| | |--.   ,--.  _ .--. `| |-'.---.  _ .--.  
@@ -22,6 +23,7 @@
                                             \/|
                                              /\
                                              \/
+</pre>
 Chapter Time creates a tab-separated table of markers from a JSON file for
 easy import into Audition and other DAWs. It also takes your markers and turns
 them back into a Podcast Chapters JSON file (coming soon)
