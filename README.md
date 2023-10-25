@@ -30,3 +30,5 @@ them back into a Podcast Chapters JSON file (coming soon)
 
 Chapter Time is currently a work in progress and will be totally unusable to anyone
 who isn't me for now. When it's ready for more podcasters I will make some noise about it.
+
+Requires Python 3.10 or later.
