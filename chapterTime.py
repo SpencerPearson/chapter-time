@@ -82,6 +82,12 @@ def getFileNameFormat(show, episode):
         return f'episode-{episode}-chapters.json'
     else:
         return f'ch-episode-{episode}.json'
+    
+def getShowPath(show):
+    if show == 'bab':
+        return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Bowl After Bowl/feed/chapters/'
+    else:
+        return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Homegrown Hits/feed.homegrownhits.xyz/assets/chapters/'
 
 system("title Chapter Time -- Podcast Chapter Converter")
 
@@ -101,11 +107,11 @@ def main():
                 podcastAnswer = input('\nWhich podcast are you producing? 1) BAB 2) HGH ')
                 match podcastAnswer.lower():
                     case '1' | 'bab' | 'bowl after bowl':
-                        podcastAnswer = 'bab'
+                        show = 'bab'
                         podAnswered = True
                         break
                     case '2' | 'hgh' | 'homegrown hits' | 'home grown hits':
-                        podcastAnswer = 'hgh'
+                        show = 'hgh'
                         podAnswered = True
                         break
                     case _:
@@ -114,12 +120,7 @@ def main():
                         clear()
                         printChapterTime()
                         continue
-            if podcastAnswer == 'bab':
-                path = f'C:/Users/tiger/Desktop/Spencer/Podcasting/Bowl After Bowl/feed/chapters/'
-                show = 'bab'
-            else:
-                path = f'C:/Users/tiger/Desktop/Spencer/Podcasting/Homegrown Hits/feed.homegrownhits.xyz/assets/chapters/'
-                show = 'hgh'
+            path = getShowPath(show)
             print(f'Path: {path}, show: {show}')
             epAnswered = False
             while epAnswered == False:
@@ -168,6 +169,9 @@ def main():
                     # get startTime and name of chapter
                     startTime = i['startTime']
                     chapterName = i['title']
+                    # remove any commas in chapterName
+                    if ',' in chapterName:
+                        chapterName = chapterName.replace(',', '')
                     # convert seconds to hh:mm:ss
                     hms = time.strftime('%H:%M:%S', time.gmtime(startTime))
                     print(f'Chapter {counter + 1}: {chapterName}\nJSON seconds: {startTime}\nFormatted time: {hms}')
@@ -190,22 +194,25 @@ def main():
                         dictWriter.writerows(timestamps)
                     input('Markers file created! Press Enter to continue...')
                     keepGoin = input('Are you all finished?\nEnter (Y)es to exit, or anything else to return to main menu.')
+                    converted = True
                     if keepGoin == 'yes' or keepGoin == 'y' or keepGoin == '1':
                         clear()
                         printWolf()
                         input('Press Enter to exit Chapter Time...')
-                        converted = True
                         finished = True
                 else:
                     clear()
                     printChapterTime()
                     print(f'Changes discarded. Please check that your {fileName} timestamps are correct before trying again.')
                     input('Press Enter to continue...')
+                    clear()
+                    printChapterTime()
+                    keepGoin = input('Are you all finished?\nEnter (Y)es to exit, or anything else to return to main menu.')
+                    converted = True
                     if keepGoin == 'yes' or keepGoin == 'y' or  keepGoin == '1':
                         clear()
                         printWolf()
                         input('Press Enter to exit Chapter Time...')
-                        converted = True
                         finished = True
         elif choice == '2':
             podAnswered = False
@@ -213,11 +220,11 @@ def main():
                 podcastAnswer = input('\nWhich podcast are you producing? 1) BAB 2) HGH ')
                 match podcastAnswer.lower():
                     case '1' | 'bab' | 'bowl after bowl':
-                        podcastAnswer = 'bab'
+                        show = 'bab'
                         podAnswered = True
                         break
                     case '2' | 'hgh' | 'homegrown hits' | 'home grown hits':
-                        podcastAnswer = 'hgh'
+                        show = 'hgh'
                         podAnswered = True
                         break
                     case _:
@@ -226,12 +233,7 @@ def main():
                         clear()
                         printChapterTime()
                         continue
-            if podcastAnswer == 'bab':
-                path = f'C:/Users/tiger/Desktop/Spencer/Podcasting/Bowl After Bowl/feed/chapters/'
-                show = 'bab'
-            else:
-                path = f'C:/Users/tiger/Desktop/Spencer/Podcasting/Homegrown Hits/feed.homegrownhits.xyz/assets/chapters/'
-                show = 'hgh'
+            path = getShowPath(show)
             print(f'Path: {path}, show: {show}')
             epAnswered = False
             while epAnswered == False:
