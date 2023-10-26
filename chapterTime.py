@@ -87,7 +87,11 @@ def getShowPath(show):
     if show == 'bab':
         return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Bowl After Bowl/feed/chapters/'
     else:
-        return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Homegrown Hits/feed.homegrownhits.xyz/assets/chapters/'
+        machine = input(f'Which computer are you using? \n1) the Bowl desktop (MIGHTY-MO)\n2) The black laptop')
+        if machine == '1':
+            return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Homegrown Hits/feed.homegrownhits.xyz/assets/chapters/'
+        else:
+            return 'C:/Users/tiger/Desktop/HH/chapters/'
 
 system("title Chapter Time -- Podcast Chapter Converter")
 
