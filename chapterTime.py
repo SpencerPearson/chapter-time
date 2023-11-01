@@ -327,11 +327,11 @@ def main():
                         oldTime = i['startTime']
                         # update timestamp
                         i['startTime'] = timestamps[counter]
+                        counter += 1
                         print(f'Chapter {counter}: {i['title']}\nOld time: {oldTime} ==> New time: {i['startTime']}')
                         print('-------------------------------------------')
                         time.sleep(.25)
 
-                        counter += 1
                     confStamps = input('Review timestamps above. Does that look right?'
                                        + f'\n(Y)es to save changes to {fileName}, (N)o to cancel.' 
                                        + '\n(Y)es/(N)o: ').lower()
