@@ -3,12 +3,12 @@ import time
 import json
 import re
 import pandas as pd
-import tempfile
-from csv import DictWriter
-from csv import reader
-from os import system
+from csv import DictWriter, reader
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 
-def clear(): system('cls')
+
+
+def clear(): os.system('cls')
 
 def printChapterTime():
     print(r'''
@@ -62,7 +62,7 @@ def printWolf():
 ..--''--.- '         (\      .-(\             PR TO THE PROJECT HERE:
   ..--''              `-\(\/;`                https://github.com/SpencerPearson/chapter-time
     _.                      :                 
-                            ;`-               TOOT ME ON MASTODON: @SirSpencer@noagendasocial.com
+                            ;`-               TOOT ME ON MASTODON: @spencer@mk.spook.social
                         :\                    EMAIL ME: spencer@bowlafterbowl.com
                            ; 
           ''')
@@ -77,23 +77,7 @@ tailDotRGX = re.compile(r'(?:(\.)|(\.\d*?[1-9]\d*?))0+(?=\b|[^0-9])')
 def removeZeros(a):
     return tailDotRGX.sub(r'\2', a)
 
-def getFileNameFormat(show, episode):
-    if show == 'bab':
-        return f'episode-{episode}-chapters.json'
-    else:
-        return f'ch-episode-{episode}.json'
-    
-def getShowPath(show):
-    if show == 'bab':
-        return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Bowl After Bowl/feed/chapters/'
-    else:
-        machine = input(f'Which computer are you using? \n1) the Bowl desktop (MIGHTY-MO)\n2) The black laptop')
-        if machine == '1':
-            return 'C:/Users/tiger/Desktop/Spencer/Podcasting/Homegrown Hits/feed.homegrownhits.xyz/assets/chapters/'
-        else:
-            return 'C:/Users/tiger/Desktop/HH/chapters/'
-
-system("title Chapter Time -- Podcast Chapter Converter")
+os.system("title Chapter Time -- Podcast Chapter Converter")
 
 def main():
     finished = False
@@ -106,69 +90,16 @@ def main():
                     + '3) see Value For Value info\n\n'
                     + 'Selection: ')
         if choice == '1':
-            podAnswered = False
-            while podAnswered == False:
-                podcastAnswer = input('\nWhich podcast are you producing? 1) BAB 2) HGH ')
-                match podcastAnswer.lower():
-                    case '1' | 'bab' | 'bowl after bowl':
-                        show = 'bab'
-                        podAnswered = True
-                        break
-                    case '2' | 'hgh' | 'homegrown hits' | 'home grown hits':
-                        show = 'hgh'
-                        podAnswered = True
-                        break
-                    case _:
-                        print('\nThat\'s not a valid input! How about giving it another shot?' )
-                        time.sleep(2)
-                        clear()
-                        printChapterTime()
-                        continue
-            path = getShowPath(show)
-            print(f'Path: {path}, show: {show}')
-            epAnswered = False
-            while epAnswered == False:
-                episode = input('\nWhich episode are you producing? Numbers only! ')
-                if re.match(r'\d{1,3}', episode) and len(episode) < 4:
-                    conf = False
-                    while conf == False:
-                        confirm = input(f'\nYou entered "{episode}," is that correct? Y/N: ').lower()
-                        if confirm == 'y' or confirm == 'yes' or confirm == '1':
-                            clear()
-                            printChapterTime()
-                            epAnswered = True
-                            conf = True
-                            break
-                        elif confirm == 'n' or confirm == 'no' or confirm == '2':
-                            print("\nLet's try again.")
-                            time.sleep(1)
-                            conf = True
-                            clear()
-                            printChapterTime()
-                            continue
-                        else:
-                            print("\nInvalid format. Please enter Y(es) or N(o).")
-                            time.sleep(2)
-                            clear()
-                            printChapterTime()
-                            continue
-                else:
-                    print("\nInvalid format. Please enter a 2-3 digit number.")
-                    time.sleep(2)
-                    clear()
-                    printChapterTime()
-                    continue
             converted = False
             while converted == False:
-                fileName = getFileNameFormat(show, episode)
-                fullPath = path + fileName
-                print(f'\nOpening Episode {episode} chapter file\n'
-                        + f'from path: {fullPath}')
+                fullPath = askopenfilename()
+                print(f'\nOpening chapter file from path:'
+                        + f'\n{fullPath}')
                 f = open(fullPath)
                 jsonData = json.load(f)
                 timestamps = []
                 counter = 0
-                print(f'Converting Episode {episode} chapters to timestamps...')
+                print(f'Converting JSON chapters to timestamps...')
                 for i in jsonData['chapters']:
                     # get startTime and name of chapter
                     startTime = i['startTime']
@@ -185,14 +116,15 @@ def main():
                     timestamps.append({'Name': chapterName, 'Start': hms, 'Duration': '0:00.000', 'Format': 'decimal', 'Type': 'Cue', 'Description': ''})
                     counter += 1
                 confStamps = input('Review formatted times above. Does that look right?'
-                                       + f'\n(Y)es to save changes to {fileName}, (N)o to cancel.' 
+                                       + f'\n(Y)es to save changes to .csv file, (N)o to cancel.' 
                                        + '\n(Y)es/(N)o: ').lower()
                 if confStamps == 'y' or confStamps == 'yes' or confStamps == '1':
                     clear()
                     printChapterTime()
                     # make keys from dict list
                     keys = timestamps[0].keys()
-                    with open(path + f'markers-ep-{episode}.csv', 'w', newline='') as outputFile:
+                    savePath = asksaveasfilename(defaultextension='.csv')
+                    with open(savePath, 'w', newline='') as outputFile:
                         dictWriter = DictWriter(outputFile, keys, delimiter='\t')
                         dictWriter.writeheader()
                         dictWriter.writerows(timestamps)
@@ -207,7 +139,7 @@ def main():
                 else:
                     clear()
                     printChapterTime()
-                    print(f'Changes discarded. Please check that your {fileName} timestamps are correct before trying again.')
+                    print(f'Changes discarded. Please check that your timestamps are correct before trying again.')
                     input('Press Enter to continue...')
                     clear()
                     printChapterTime()
@@ -219,68 +151,16 @@ def main():
                         input('Press Enter to exit Chapter Time...')
                         finished = True
         elif choice == '2':
-            podAnswered = False
-            while podAnswered == False:
-                podcastAnswer = input('\nWhich podcast are you producing? 1) BAB 2) HGH ')
-                match podcastAnswer.lower():
-                    case '1' | 'bab' | 'bowl after bowl':
-                        show = 'bab'
-                        podAnswered = True
-                        break
-                    case '2' | 'hgh' | 'homegrown hits' | 'home grown hits':
-                        show = 'hgh'
-                        podAnswered = True
-                        break
-                    case _:
-                        print('\nThat\'s not a valid input! How about giving it another shot?' )
-                        time.sleep(2)
-                        clear()
-                        printChapterTime()
-                        continue
-            path = getShowPath(show)
-            print(f'Path: {path}, show: {show}')
-            epAnswered = False
-            while epAnswered == False:
-                episode = input('\nWhich episode are you producing? Numbers only! ')
-                if re.match(r'\d{1,3}', episode) and len(episode) < 4:
-                    conf = False
-                    while conf == False:
-                        confirm = input(f'\nYou entered "{episode}," is that correct? Y/N: ').lower()
-                        if confirm == 'y' or confirm == 'yes':
-                            clear()
-                            printChapterTime()
-                            epAnswered = True
-                            conf = True
-                            break
-                        elif confirm == 'n' or confirm == 'no':
-                            print("\nLet's try again.")
-                            time.sleep(1)
-                            conf = True
-                            clear()
-                            printChapterTime()
-                            continue
-                        else:
-                            print("\nInvalid format. Please enter Y(es) or N(o).")
-                            time.sleep(2)
-                            clear()
-                            printChapterTime()
-                            continue
-                else:
-                    print("\nInvalid format. Please enter a 2-3 digit number.")
-                    time.sleep(2)
-                    clear()
-                    printChapterTime()
-                    continue
             converted = False
             while converted == False:
-                fullPath = path + f'markers-ep-{episode}.csv'
-                print(f'\nOpening Episode {episode} markers file\n'
-                        + f'from path: {fullPath}')
+                fullPath = askopenfilename()
+                print(f'\nOpening csv markers file from path:\n'
+                        + f'{fullPath}')
                 f = open(fullPath)
                 csvReader = reader(f)
                 timestamps = []
                 counter = 0
-                print(f'Converting Episode {episode} timestamps to seconds...')
+                print(f'Converting timestamps to seconds...')
                 for i in csvReader:
                     #skip first loop
                     if counter > 0:
@@ -318,8 +198,13 @@ def main():
                 clear()
                 printChapterTime()
                 # open json chapters file
-                fileName = getFileNameFormat(show, episode)
-                with open(path + fileName, 'r+') as jsonFile:
+                # fileName = getFileNameFormat(show, episode)
+                print('Please locate the original JSON file to overwrite.')
+                input('Press enter to select the file...')
+                clear()
+                printChapterTime()
+                oldJSON = askopenfilename()
+                with open(oldJSON, 'r+') as jsonFile:
                     jsonChapters = json.load(jsonFile)
                     counter = 0
                     print(f'Replacing old chapter times with new timestamps...')
@@ -333,7 +218,7 @@ def main():
                         time.sleep(.25)
 
                     confStamps = input('Review timestamps above. Does that look right?'
-                                       + f'\n(Y)es to save changes to {fileName}, (N)o to cancel.' 
+                                       + f'\n(Y)es to save changes to JSON file, (N)o to cancel.' 
                                        + '\n(Y)es/(N)o: ').lower()
                     if confStamps == 'y' or confStamps == 'yes' or confStamps == '1':
                         clear()
@@ -341,13 +226,13 @@ def main():
                         jsonFile.seek(0)
                         jsonFile.write(json.dumps(jsonChapters))
                         jsonFile.truncate()
-                        print(f'Chapters file updated! Changes to {fileName} saved!')
+                        print(f'Chapters file updated! Changes to JSON file saved!')
                         time.sleep(2)
                         converted = True
                     else:
                         clear()
                         printChapterTime()
-                        print(f'Changes discarded. Please check that your {fileName} timestamps are correct before trying again.')
+                        print(f'Changes discarded. Please check that your timestamps are correct before trying again.')
                         input('Press Enter to continue...')
                         converted = True
                     keepGoin = input('Are you all finished?\nEnter (Y)es to exit, or anything else to return to main menu.')
